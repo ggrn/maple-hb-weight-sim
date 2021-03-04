@@ -1,38 +1,120 @@
 .App {
   text-align: center;
+  background-color: aliceblue;
+  padding: 10px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.Panel {
+  background-color: white;
+  border-radius: 5px;
+  border: 1px black solid;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.Panel + .Panel {
+  margin-top: 10px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.PanelHeader {
+  padding: 5px;
+  border-bottom: 1px gray solid;
+}
+
+.PanelHeaderRow {
   display: flex;
-  flex-direction: column;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.PanelHeaderElement {
+  display: flex;
+  width: 10%;
+  min-width: 4em;
+}
+
+.PanelHeaderElement span {
+  font-size: 0.7em;
+  flex: 1;
+  text-align: right;
+  padding-right: 5px;
+}
+
+.PanelHeaderElement input {
+  flex: 1;
+  width: 100%;
+}
+
+.PanelBody {
+  display: flex;
+  padding: 5px;
+}
+
+.Graph {
+  flex: 1;
+  border-right: 1px grey solid;
+}
+
+.GraphElement {
+  font-size: 0.4em;
+  display: flex;
+}
+
+.GraphElement span {
+  flex: 1;
+  text-align: right;
+  margin: 2px;
+}
+
+.Bar {
+  margin: 3px;
+  flex: 7;
+  background-color: darkgray;
+}
+
+.BarElement {
+  width: 0;
+  height: 100%;
+  max-width: 100%;
+  min-width: 0%;
+  transition: ease-out .5s width;
+  background-color: black;
+}
+
+.Statistics {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.StatElement {
+  font-size: 0.4em;
+  display: flex;
+  width: 50%;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.StatElement span {
+  flex: 1;
+  text-align: right;
+  padding-right: 5px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@media(max-width: 1024px) {
+  .PanelBody {
+    flex-direction: column;
   }
-  to {
-    transform: rotate(360deg);
+
+  .Graph {
+    border-right: none;
+    border-bottom: 1px grey solid;
+  }
+
+  .Statistics {
+    padding-top: 5px;
+  }
+
+  .StatElement input {
+    flex: 1;
+    width: 100%;
   }
 }
