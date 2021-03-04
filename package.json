@@ -44,5 +44,5 @@
     "prettier": "^2.2.1",
     "workerize-loader": "^1.3.0"
   },
-  "homepage": "http://ggrn.github.io/maple-hb-weight-sim"
+  "homepage": "https://ggrn.github.io/maple-hb-weight-sim"
 }

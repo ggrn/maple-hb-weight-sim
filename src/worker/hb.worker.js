@@ -72,7 +72,7 @@ const getRandomInt = (min, max) => {
 const filterWeightedOptionBySelected = (selected) => (w) => w !== selected;
 
 const run = () => {
-  if (results.length > MAX_RESULT_SIZE || !isRun) {
+  if (results.length >= MAX_RESULT_SIZE || !isRun) {
     console.log('worker stopped.');
     isRun = false;
     self.postMessage({ type: 'run', value: false });
