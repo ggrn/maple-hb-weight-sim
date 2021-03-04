@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/maple-hb-weight-sim/static/css/main.aa076537.chunk.css",
+    "main.js": "/maple-hb-weight-sim/static/js/main.0c1f014f.chunk.js",
+    "main.js.map": "/maple-hb-weight-sim/static/js/main.0c1f014f.chunk.js.map",
+    "runtime-main.js": "/maple-hb-weight-sim/static/js/runtime-main.7935a473.js",
+    "runtime-main.js.map": "/maple-hb-weight-sim/static/js/runtime-main.7935a473.js.map",
+    "static/js/2.84e8e21a.chunk.js": "/maple-hb-weight-sim/static/js/2.84e8e21a.chunk.js",
+    "static/js/2.84e8e21a.chunk.js.map": "/maple-hb-weight-sim/static/js/2.84e8e21a.chunk.js.map",
+    "static/js/3.166da25f.chunk.js": "/maple-hb-weight-sim/static/js/3.166da25f.chunk.js",
+    "static/js/3.166da25f.chunk.js.map": "/maple-hb-weight-sim/static/js/3.166da25f.chunk.js.map",
+    "a36d1e64597cde7e519f.worker.js": "/maple-hb-weight-sim/a36d1e64597cde7e519f.worker.js",
+    "a36d1e64597cde7e519f.worker.js.map": "/maple-hb-weight-sim/a36d1e64597cde7e519f.worker.js.map",
+    "index.html": "/maple-hb-weight-sim/index.html",
+    "static/css/main.aa076537.chunk.css.map": "/maple-hb-weight-sim/static/css/main.aa076537.chunk.css.map",
+    "static/js/2.84e8e21a.chunk.js.LICENSE.txt": "/maple-hb-weight-sim/static/js/2.84e8e21a.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.7935a473.js",
+    "static/js/2.84e8e21a.chunk.js",
+    "static/css/main.aa076537.chunk.css",
+    "static/js/main.0c1f014f.chunk.js"
+  ]
+}
