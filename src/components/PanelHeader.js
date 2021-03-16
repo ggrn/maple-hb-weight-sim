@@ -30,6 +30,8 @@ const PanelHeader = ({
   onRunClicked,
   onDownloadClicked,
   onSettingButtonClicked,
+  isNewLogic,
+  onNewLogicChanged,
 }) => {
   return (
     <div className="PanelHeader">
@@ -58,16 +60,21 @@ const PanelHeader = ({
             />
           );
         })}
+        <RunMode value={isNewLogic} onNewLogicChanged={onNewLogicChanged} isRun={isRun} />
       </div>
       <div className="PanelHeaderRow" style={{ justifyContent: 'flex-end', paddingTop: '5px' }}>
-        <button onClick={onDownloadClicked}>download</button>
         <button disabled={isRun} onClick={onSettingButtonClicked('all1')}>
           Set All 1
         </button>
         <button disabled={isRun} onClick={onSettingButtonClicked('expect')}>
           Set Expect
         </button>
-        <button onClick={onRunClicked}>{isRun ? 'Stop' : 'Run'}</button>
+        <button onClick={onDownloadClicked} style={{ marginLeft: '5px' }}>
+          download as csv
+        </button>
+        <button onClick={onRunClicked} style={{ marginLeft: '5px' }}>
+          {isRun ? 'Stop' : 'Run'}
+        </button>
       </div>
     </div>
   );
@@ -80,6 +87,8 @@ PanelHeader.propTypes = {
   onWeightChanged: PropTypes.func.isRequired,
   isRun: PropTypes.bool.isRequired,
   onRunClicked: PropTypes.func.isRequired,
+  isNewLogic: PropTypes.bool.isRequired,
+  onNewLogicChanged: PropTypes.func.isRequired,
 };
 
 const PanelHeaderElement = ({ text, weight, onWeightChanged, isRun }) => {
@@ -101,4 +110,13 @@ const PanelHeaderElement = ({ text, weight, onWeightChanged, isRun }) => {
 
 PanelHeaderElement.propTypes = {
   text: PropTypes.string.isRequired,
+};
+
+const RunMode = ({ value, onNewLogicChanged, isRun }) => {
+  return (
+    <div className="PanelHeaderElement">
+      <span style={{ letterSpacing: '-0.1em' }}>New Logic</span>
+      <input type="checkbox" checked={value} onChange={onNewLogicChanged} disabled={isRun} />
+    </div>
+  );
 };

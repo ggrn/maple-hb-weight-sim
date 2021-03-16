@@ -52,12 +52,25 @@ const getRandomOptions = () => {
           ? left[getRandomInt(0, left.length)]
           : right[getRandomInt(0, right.length)];
     }
-    if (selected === undefined) debugger;
     left = weightedOptions.slice(0, weightedOptions.indexOf(selected));
     right = weightedOptions.slice(
       weightedOptions.lastIndexOf(selected) + 1,
       weightedOptions.length,
     );
+    weightedOptions = weightedOptions.filter(filterWeightedOptionBySelected(selected));
+    selectedOptions[selected] = getOptionValueRandom(selected);
+  }
+
+  return selectedOptions;
+};
+
+const getRandomOptionsNew = () => {
+  const selectedOptions = [...defaultOption];
+  let weightedOptions = getWeightedArray(weights);
+  let selected;
+
+  for (let index = 0; index < 4; index++) {
+    selected = weightedOptions[getRandomInt(0, weightedOptions.length)];
     weightedOptions = weightedOptions.filter(filterWeightedOptionBySelected(selected));
     selectedOptions[selected] = getOptionValueRandom(selected);
   }
@@ -86,6 +99,23 @@ const run = () => {
   }
 
   setTimeout(run);
+};
+
+const runNew = () => {
+  if (results.length >= MAX_RESULT_SIZE || !isRun) {
+    console.log('worker stopped.');
+    isRun = false;
+    self.postMessage({ type: 'run', value: false });
+    return;
+  }
+
+  if (newResults.length < MAX_RESULT_QUEUE) {
+    for (let index = 0; index < RUN_WINDOW; index++) {
+      newResults.push(getRandomOptionsNew());
+    }
+  }
+
+  setTimeout(runNew);
 };
 
 const statAndPublishResults = () => {
@@ -182,7 +212,7 @@ self.addEventListener('message', (ev) => {
     maxDexScore = Number.MIN_SAFE_INTEGER;
     maxIntScore = Number.MIN_SAFE_INTEGER;
     maxLukScore = Number.MIN_SAFE_INTEGER;
-    run();
+    !ev.data.isNewLogic ? run() : runNew();
     statAndPublishResults();
     self.postMessage({ type: 'run', value: true });
   } else if (ev.data.run === false) {

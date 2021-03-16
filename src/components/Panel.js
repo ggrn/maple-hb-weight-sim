@@ -5,10 +5,11 @@ import PanelBody from './PanelBody';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import HBWorker from 'workerize-loader!../worker/hb.worker';
 
-const Panel = ({ id, defaultWeight }) => {
+const Panel = ({ id, defaultWeight, defaultIsNewLogic = false }) => {
   const [weights, setWeights] = useState(defaultWeight);
   const [isRun, setIsRun] = useState(false);
   const [stat, setStat] = useState({});
+  const [isNewLogic, setIsNewLogic] = useState(defaultIsNewLogic);
 
   const [worker, setWorker] = useState(null);
   useEffect(() => {
@@ -60,9 +61,9 @@ const Panel = ({ id, defaultWeight }) => {
     if (isRun) {
       worker?.postMessage({ run: false });
     } else {
-      worker?.postMessage({ run: true, weights });
+      worker?.postMessage({ run: true, weights, isNewLogic });
     }
-  }, [worker, isRun, weights]);
+  }, [worker, isRun, weights, isNewLogic]);
 
   const onDownloadClicked = useCallback(() => {
     worker?.postMessage({ download: true });
@@ -77,6 +78,10 @@ const Panel = ({ id, defaultWeight }) => {
     [setWeights],
   );
 
+  const onNewLogicChanged = useCallback(() => {
+    setIsNewLogic((n) => !n);
+  }, [setIsNewLogic]);
+
   return (
     <div className="Panel">
       <PanelHeader
@@ -86,6 +91,8 @@ const Panel = ({ id, defaultWeight }) => {
         onRunClicked={onRunClicked}
         onDownloadClicked={onDownloadClicked}
         onSettingButtonClicked={onSettingButtonClicked}
+        isNewLogic={isNewLogic}
+        onNewLogicChanged={onNewLogicChanged}
       />
       <PanelBody stat={stat} />
     </div>
