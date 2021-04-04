@@ -10,6 +10,12 @@ const Panel = ({ id, defaultWeight, defaultIsNewLogic = false }) => {
   const [isRun, setIsRun] = useState(false);
   const [stat, setStat] = useState({});
   const [isNewLogic, setIsNewLogic] = useState(defaultIsNewLogic);
+  const [itemLevel, setItemLevel] = useState(160);
+  const [atkScore, setAtkScore] = useState(4.0);
+  const [allStatScore, setAllStatScore] = useState(10.0);
+  const [maxResultSize, setMaxResultSize] = useState(10000000);
+  const [maxResultQueue, setMaxResultQueue] = useState(10000);
+  const [runWindow, setRunWindow] = useState(1000);
 
   const [worker, setWorker] = useState(null);
   useEffect(() => {
@@ -61,9 +67,30 @@ const Panel = ({ id, defaultWeight, defaultIsNewLogic = false }) => {
     if (isRun) {
       worker?.postMessage({ run: false });
     } else {
-      worker?.postMessage({ run: true, weights, isNewLogic });
+      worker?.postMessage({
+        run: true,
+        weights,
+        isNewLogic,
+        itemLevel,
+        atkScore,
+        allStatScore,
+        maxResultSize,
+        maxResultQueue,
+        runWindow,
+      });
     }
-  }, [worker, isRun, weights, isNewLogic]);
+  }, [
+    worker,
+    isRun,
+    weights,
+    isNewLogic,
+    itemLevel,
+    atkScore,
+    allStatScore,
+    maxResultSize,
+    maxResultQueue,
+    runWindow,
+  ]);
 
   const onDownloadClicked = useCallback(() => {
     worker?.postMessage({ download: true });
@@ -80,7 +107,31 @@ const Panel = ({ id, defaultWeight, defaultIsNewLogic = false }) => {
 
   const onNewLogicChanged = useCallback(() => {
     setIsNewLogic((n) => !n);
-  }, [setIsNewLogic]);
+  }, []);
+
+  const onItemLevelChanged = useCallback((e) => {
+    setItemLevel(e.target.value);
+  }, []);
+
+  const onAtkScoreChanged = useCallback((e) => {
+    setAtkScore(e.target.value);
+  }, []);
+
+  const onAllStatScoreChanged = useCallback((e) => {
+    setAllStatScore(e.target.value);
+  }, []);
+
+  const onMaxResultSizeChanged = useCallback((e) => {
+    setMaxResultSize(e.target.value);
+  }, []);
+
+  const onMaxResultQueueChanged = useCallback((e) => {
+    setMaxResultQueue(e.target.value);
+  }, []);
+
+  const onRunWindowChanged = useCallback((e) => {
+    setRunWindow(e.target.value);
+  }, []);
 
   return (
     <div className="Panel">
@@ -93,6 +144,18 @@ const Panel = ({ id, defaultWeight, defaultIsNewLogic = false }) => {
         onSettingButtonClicked={onSettingButtonClicked}
         isNewLogic={isNewLogic}
         onNewLogicChanged={onNewLogicChanged}
+        itemLevel={itemLevel}
+        onItemLevelChanged={onItemLevelChanged}
+        atkScore={atkScore}
+        onAtkScoreChanged={onAtkScoreChanged}
+        allStatScore={allStatScore}
+        onAllStatScoreChanged={onAllStatScoreChanged}
+        maxResultSize={maxResultSize}
+        onMaxResultSizeChanged={onMaxResultSizeChanged}
+        maxResultQueue={maxResultQueue}
+        onMaxResultQueueChanged={onMaxResultQueueChanged}
+        runWindow={runWindow}
+        onRunWindowChanged={onRunWindowChanged}
       />
       <PanelBody stat={stat} />
     </div>

@@ -1,23 +1,28 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-restricted-globals */
 import optionConfigs from '../config/options';
 
 const { options, optionValues, gradeRate } = optionConfigs;
 
-const MAX_RESULT_SIZE = 10000000;
-const MAX_RESULT_QUEUE = 10000;
-const RUN_WINDOW = 1000;
-const ATK_SCORE = 4;
-const ALL_SCORE = 10;
-
 let results = [];
 let newResults = [];
 let tempNewResults = [];
 let counts; // = options.map(() => 0);
-let overs;
+let overs = { all: [], str: [], dex: [], int: [], luk: [] };
 let isRun = false;
 let maxStrScore, maxDexScore, maxIntScore, maxLukScore;
-let weights;
+
+const configs = {
+  weights: undefined,
+  itemLevel: 160,
+  atkScore: 4.0,
+  allStatScore: 10.0,
+  maxResultSize: 10000000,
+  maxResultQueue: 10000,
+  runWindow: 1000,
+};
+
 const defaultOption = options.map(() => 0);
 
 const getWeightedArray = (weights) => {
@@ -30,12 +35,12 @@ const getWeightedArray = (weights) => {
 };
 const weightedGrades = getWeightedArray(gradeRate);
 const getOptionValueRandom = (selected) => {
-  return optionValues[selected][weightedGrades[getRandomInt(0, 100)]];
+  return optionValues[configs.itemLevel][selected][weightedGrades[getRandomInt(0, 100)]];
 };
 
 const getRandomOptions = () => {
   const selectedOptions = [...defaultOption];
-  let weightedOptions = getWeightedArray(weights);
+  let weightedOptions = getWeightedArray(configs.weights);
 
   let left, right, selected;
   left = weightedOptions;
@@ -66,7 +71,7 @@ const getRandomOptions = () => {
 
 const getRandomOptionsNew = () => {
   const selectedOptions = [...defaultOption];
-  let weightedOptions = getWeightedArray(weights);
+  let weightedOptions = getWeightedArray(configs.weights);
   let selected;
 
   for (let index = 0; index < 4; index++) {
@@ -85,15 +90,15 @@ const getRandomInt = (min, max) => {
 const filterWeightedOptionBySelected = (selected) => (w) => w !== selected;
 
 const run = () => {
-  if (results.length >= MAX_RESULT_SIZE || !isRun) {
+  if (results.length >= configs.maxResultSize || !isRun) {
     console.log('worker stopped.');
     isRun = false;
     self.postMessage({ type: 'run', value: false });
     return;
   }
 
-  if (newResults.length < MAX_RESULT_QUEUE) {
-    for (let index = 0; index < RUN_WINDOW; index++) {
+  if (newResults.length < configs.maxResultQueue) {
+    for (let index = 0; index < configs.runWindow; index++) {
       newResults.push(getRandomOptions());
     }
   }
@@ -102,15 +107,15 @@ const run = () => {
 };
 
 const runNew = () => {
-  if (results.length >= MAX_RESULT_SIZE || !isRun) {
+  if (results.length >= configs.maxResultSize || !isRun) {
     console.log('worker stopped.');
     isRun = false;
     self.postMessage({ type: 'run', value: false });
     return;
   }
 
-  if (newResults.length < MAX_RESULT_QUEUE) {
-    for (let index = 0; index < RUN_WINDOW; index++) {
+  if (newResults.length < configs.maxResultQueue) {
+    for (let index = 0; index < configs.runWindow; index++) {
       newResults.push(getRandomOptionsNew());
     }
   }
@@ -122,7 +127,7 @@ const statAndPublishResults = () => {
   if (!isRun) {
     return;
   }
-  tempNewResults = [...newResults].slice(0, MAX_RESULT_SIZE - results.length);
+  tempNewResults = [...newResults].slice(0, configs.maxResultSize - results.length);
   newResults = [];
   const stats = getStats(tempNewResults);
   self.postMessage({ type: 'stat', value: stats });
@@ -138,30 +143,61 @@ const getStats = (tempNewResults) => {
   let tempMaxIntScore = 0;
   let tempMaxLukScore = 0;
   let strScore, dexScore, intScore, lukScore, resultMaxScore;
-  let tempOvers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  let tempOvers = {
+    all: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    str: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    dex: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    int: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    luk: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  };
 
   tempNewResults.forEach((r) => {
     r.forEach((optionValue, i) => {
       if (optionValue > 0) counts[i]++;
     });
-    strScore = r[0] + r[4] + r[5] + r[6] + r[14] * ATK_SCORE + r[18] * ALL_SCORE;
+    strScore = r[0] + r[4] + r[5] + r[6] + r[14] * configs.atkScore + r[18] * configs.allStatScore;
     tempMaxStrScore = strScore > tempMaxStrScore ? strScore : tempMaxStrScore;
-    dexScore = r[1] + r[4] + r[7] + r[8] + r[14] * ATK_SCORE + r[18] * ALL_SCORE;
+    tempOvers.str.forEach((_, i, arr) => {
+      if (strScore >= i * 10 + 70) {
+        arr[i]++;
+      }
+    });
+
+    dexScore = r[1] + r[4] + r[7] + r[8] + r[14] * configs.atkScore + r[18] * configs.allStatScore;
     tempMaxDexScore = dexScore > tempMaxDexScore ? dexScore : tempMaxDexScore;
-    intScore = r[2] + r[5] + r[7] + r[9] + r[15] * ATK_SCORE + r[18] * ALL_SCORE;
+    tempOvers.dex.forEach((_, i, arr) => {
+      if (dexScore >= i * 10 + 70) {
+        arr[i]++;
+      }
+    });
+
+    intScore = r[2] + r[5] + r[7] + r[9] + r[15] * configs.atkScore + r[18] * configs.allStatScore;
     tempMaxIntScore = intScore > tempMaxIntScore ? intScore : tempMaxIntScore;
-    lukScore = r[3] + r[6] + r[8] + r[9] + r[14] * ATK_SCORE + r[18] * ALL_SCORE;
+    tempOvers.int.forEach((_, i, arr) => {
+      if (intScore >= i * 10 + 70) {
+        arr[i]++;
+      }
+    });
+
+    lukScore = r[3] + r[6] + r[8] + r[9] + r[14] * configs.atkScore + r[18] * configs.allStatScore;
     tempMaxLukScore = lukScore > tempMaxLukScore ? lukScore : tempMaxLukScore;
+    tempOvers.luk.forEach((_, i, arr) => {
+      if (lukScore >= i * 10 + 70) {
+        arr[i]++;
+      }
+    });
 
     resultMaxScore = Math.max(strScore, dexScore, intScore, lukScore);
-    tempOvers.forEach((_, i, arr) => {
+    tempOvers.all.forEach((_, i, arr) => {
       if (resultMaxScore >= i * 10 + 70) {
         arr[i]++;
       }
     });
   });
-  tempOvers.forEach((ov, i) => {
-    overs[i] += ov;
+  Object.keys(tempOvers).forEach((key) => {
+    tempOvers[key].forEach((ov, i) => {
+      overs[key][i] += ov;
+    });
   });
 
   maxStrScore = tempMaxStrScore > maxStrScore ? tempMaxStrScore : maxStrScore;
@@ -176,18 +212,7 @@ const getStats = (tempNewResults) => {
     maxDexScore,
     maxIntScore,
     maxLukScore,
-    over70: overs[0],
-    over80: overs[1],
-    over90: overs[2],
-    over100: overs[3],
-    over110: overs[4],
-    over120: overs[5],
-    over130: overs[6],
-    over140: overs[7],
-    over150: overs[8],
-    over160: overs[9],
-    over170: overs[10],
-    over180: overs[11],
+    overs,
     counts,
   };
 };
@@ -200,20 +225,41 @@ const getCsv = (results) => {
   return options.join(',') + '\n' + results.map((r) => Object.values(r).join(',')).join('\n');
 };
 
+const setConfigs = (evData = {}) => {
+  if (evData.weights) {
+    configs.weights = evData.weights;
+  }
+  ['itemLevel', 'atkScore', 'allStatScore', 'maxResultSize', 'maxResultQueue', 'runWindow'].forEach(
+    (key) => {
+      ((pred) => !isNaN(pred) && (configs[key] = pred))(parseFloat(evData[key]));
+    },
+  );
+};
+
 self.addEventListener('message', (ev) => {
   if (ev.data.run === true && ev.data.weights) {
     console.log('worker running.');
+    setConfigs(ev.data);
+
     isRun = true;
-    weights = ev.data.weights;
     results = [];
     counts = options.map(() => 0);
-    overs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    console.log(configs);
+
+    overs = Object.keys(overs).reduce(
+      (acc, key) => ({ ...acc, [key]: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] }),
+      {},
+    );
+
     maxStrScore = Number.MIN_SAFE_INTEGER;
     maxDexScore = Number.MIN_SAFE_INTEGER;
     maxIntScore = Number.MIN_SAFE_INTEGER;
     maxLukScore = Number.MIN_SAFE_INTEGER;
+
     !ev.data.isNewLogic ? run() : runNew();
     statAndPublishResults();
+
     self.postMessage({ type: 'run', value: true });
   } else if (ev.data.run === false) {
     isRun = false;

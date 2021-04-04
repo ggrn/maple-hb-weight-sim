@@ -32,6 +32,18 @@ const PanelHeader = ({
   onSettingButtonClicked,
   isNewLogic,
   onNewLogicChanged,
+  itemLevel,
+  onItemLevelChanged,
+  atkScore,
+  onAtkScoreChanged,
+  allStatScore,
+  onAllStatScoreChanged,
+  maxResultSize,
+  onMaxResultSizeChanged,
+  maxResultQueue,
+  onMaxResultQueueChanged,
+  runWindow,
+  onRunWindowChanged,
 }) => {
   return (
     <div className="PanelHeader">
@@ -41,9 +53,10 @@ const PanelHeader = ({
             <PanelHeaderElement
               key={text}
               text={text}
-              weight={weights[index]}
+              value={weights[index]}
               isRun={isRun}
-              onWeightChanged={onWeightChanged(index)}
+              step={1}
+              onChange={onWeightChanged(index)}
             />
           );
         })}
@@ -54,13 +67,58 @@ const PanelHeader = ({
             <PanelHeaderElement
               key={text}
               text={text}
-              weight={weights[index + 10]}
+              value={weights[index + 10]}
               isRun={isRun}
-              onWeightChanged={onWeightChanged(index + 10)}
+              step={1}
+              onChange={onWeightChanged(index + 10)}
             />
           );
         })}
         <RunMode value={isNewLogic} onNewLogicChanged={onNewLogicChanged} isRun={isRun} />
+      </div>
+      <div className="PanelHeaderRow">
+        <ItemLevel value={itemLevel} onItemLevelChanged={onItemLevelChanged} isRun={isRun} />
+        <PanelHeaderElement
+          text="Atk Score"
+          value={atkScore}
+          onChange={onAtkScoreChanged}
+          isRun={isRun}
+          step={0.1}
+        />
+        <PanelHeaderElement
+          text="All Stat Score"
+          value={allStatScore}
+          onChange={onAllStatScoreChanged}
+          isRun={isRun}
+          ls={'-0.1em'}
+          step={0.1}
+        />
+        <PanelHeaderElement
+          text="Max Results"
+          value={maxResultSize}
+          onChange={onMaxResultSizeChanged}
+          isRun={isRun}
+          max={100000000}
+          step={10000}
+          width={2}
+        />
+        <PanelHeaderElement
+          text="Max Result Queue"
+          value={maxResultQueue}
+          onChange={onMaxResultQueueChanged}
+          isRun={isRun}
+          max={maxResultSize / 10}
+          step={1000}
+          width={2}
+        />
+        <PanelHeaderElement
+          text="Run Window"
+          value={runWindow}
+          onChange={onRunWindowChanged}
+          isRun={isRun}
+          step={100}
+          width={2}
+        />
       </div>
       <div className="PanelHeaderRow" style={{ justifyContent: 'flex-end', paddingTop: '5px' }}>
         <button disabled={isRun} onClick={onSettingButtonClicked('all1')}>
@@ -91,17 +149,27 @@ PanelHeader.propTypes = {
   onNewLogicChanged: PropTypes.func.isRequired,
 };
 
-const PanelHeaderElement = ({ text, weight, onWeightChanged, isRun }) => {
+const PanelHeaderElement = ({
+  text,
+  value,
+  onChange,
+  isRun,
+  min = 1,
+  max = 100,
+  width = 1,
+  step,
+  ls,
+}) => {
   return (
-    <div className="PanelHeaderElement">
-      <span>{text}</span>
+    <div className="PanelHeaderElement" style={{ width: `${width * 10}%` }}>
+      <span style={{ letterSpacing: ls }}>{text}</span>
       <input
         type="number"
-        min={1}
-        max={100}
-        step={1}
-        value={weight}
-        onChange={onWeightChanged}
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={onChange}
         disabled={isRun}
       />
     </div>
@@ -117,6 +185,20 @@ const RunMode = ({ value, onNewLogicChanged, isRun }) => {
     <div className="PanelHeaderElement">
       <span style={{ letterSpacing: '-0.1em' }}>New Logic</span>
       <input type="checkbox" checked={value} onChange={onNewLogicChanged} disabled={isRun} />
+    </div>
+  );
+};
+
+const ItemLevel = ({ value, onItemLevelChanged, isRun }) => {
+  return (
+    <div className="PanelHeaderElement">
+      <span style={{ letterSpacing: '-0.1em' }}>Item Level</span>
+      <select onChange={onItemLevelChanged} value={value} disabled={isRun} style={{ width: '50%' }}>
+        <option value="140">140</option>
+        <option value="150">150</option>
+        <option value="160">160</option>
+        <option value="200">200</option>
+      </select>
     </div>
   );
 };

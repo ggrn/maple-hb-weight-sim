@@ -51,17 +51,22 @@
 .Graph {
   flex: 1;
   border-right: 1px grey solid;
+  display: flex;
+  flex-direction: column;
 }
 
 .GraphElement {
   font-size: 0.4em;
   display: flex;
+  flex: 1;
+  padding-right: 5px;
 }
 
 .GraphElement span {
   flex: 1;
   text-align: right;
   margin: 2px;
+  align-self: center;
 }
 
 .Bar {
@@ -91,6 +96,7 @@
   display: flex;
   width: 50%;
   align-items: center;
+  min-height: 18px;
 }
 
 .StatElement span {

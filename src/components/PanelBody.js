@@ -37,10 +37,12 @@ const GraphElement = ({ text, value }) => {
       <div className="Bar">
         <div className="BarElement" style={{ width: `${value}%` }}></div>
       </div>
+      <span>{value.toFixed(2)}%</span>
     </div>
   );
 };
 
+const STAT_STEPS = [70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180];
 const Statistics = ({ stat }) => {
   return (
     <div className="Statistics">
@@ -50,27 +52,54 @@ const Statistics = ({ stat }) => {
       <StatElement text={'Max DEX Score'} value={stat.maxDexScore} />
       <StatElement text={'Max INT Score'} value={stat.maxIntScore} />
       <StatElement text={'Max LUK Score'} value={stat.maxLukScore} />
-      <StatElement text={'Over 70 (%)'} value={((stat.over70 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 80 (%)'} value={((stat.over80 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 90 (%)'} value={((stat.over90 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 100 (%)'} value={((stat.over100 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 110 (%)'} value={((stat.over110 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 120 (%)'} value={((stat.over120 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 130 (%)'} value={((stat.over130 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 140 (%)'} value={((stat.over140 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 150 (%)'} value={((stat.over150 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 160 (%)'} value={((stat.over160 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 170 (%)'} value={((stat.over170 / stat.run) * 100).toFixed(8)} />
-      <StatElement text={'Over 180 (%)'} value={((stat.over180 / stat.run) * 100).toFixed(8)} />
+      {STAT_STEPS.map((step, i) => (
+        <StatElement
+          key={i}
+          text={`Over ${step} (%)`}
+          value={((stat?.overs?.all[i] / stat?.run) * 100).toFixed(8)}
+        />
+      ))}
+      {STAT_STEPS.map((step, i) => (
+        <StatElement
+          key={'str' + i}
+          text={`Over ${step} (%, STR)`}
+          value={((stat?.overs?.str[i] / stat?.run) * 100).toFixed(8)}
+          color={'#b60000'}
+        />
+      ))}
+      {STAT_STEPS.map((step, i) => (
+        <StatElement
+          key={'dex' + i}
+          text={`Over ${step} (%, DEX)`}
+          value={((stat?.overs?.dex[i] / stat?.run) * 100).toFixed(8)}
+          color={'green'}
+        />
+      ))}
+      {STAT_STEPS.map((step, i) => (
+        <StatElement
+          key={'int' + i}
+          text={`Over ${step} (%, INT)`}
+          value={((stat?.overs?.int[i] / stat?.run) * 100).toFixed(8)}
+          color={'blue'}
+        />
+      ))}
+      {STAT_STEPS.map((step, i) => (
+        <StatElement
+          key={'luk' + i}
+          text={`Over ${step} (%, LUK)`}
+          value={((stat?.overs?.luk[i] / stat?.run) * 100).toFixed(8)}
+          color={'#615a17'}
+        />
+      ))}
     </div>
   );
 };
 
-const StatElement = ({ text, value }) => {
+const StatElement = ({ text, value, color }) => {
   return (
     <div className="StatElement">
-      <span>{text}</span>
-      <input type="number" disabled value={value} readOnly />
+      <span style={{ color: color }}>{text}</span>
+      <span style={{ color: color }}>{value}</span>
     </div>
   );
 };
